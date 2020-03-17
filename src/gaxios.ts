@@ -13,9 +13,7 @@
 
 import extend from 'extend';
 import {Agent} from 'http';
-import nodeFetch, {Response as NodeFetchResponse} from 'node-fetch';
 import qs from 'querystring';
-import stream from 'stream';
 import isStream from 'is-stream';
 import url from 'url';
 
@@ -31,7 +29,7 @@ import {getRetryConfig} from './retry';
 // tslint:disable no-any
 
 const URL = hasURL() ? window.URL : url.URL;
-const fetch = hasFetch() ? window.fetch : nodeFetch;
+const fetch = window.fetch;
 
 function hasWindow() {
   return typeof window !== 'undefined' && !!window;
@@ -50,18 +48,18 @@ let HttpsProxyAgent: any;
 
 // Figure out if we should be using a proxy. Only if it's required, load
 // the https-proxy-agent module as it adds startup cost.
-function loadProxy() {
-  const proxy =
-    process.env.HTTPS_PROXY ||
-    process.env.https_proxy ||
-    process.env.HTTP_PROXY ||
-    process.env.http_proxy;
-  if (proxy) {
-    HttpsProxyAgent = require('https-proxy-agent');
-  }
-  return proxy;
-}
-loadProxy();
+// function loadProxy() {
+//   const proxy =
+//     process.env.HTTPS_PROXY ||
+//     process.env.https_proxy ||
+//     process.env.HTTP_PROXY ||
+//     process.env.http_proxy;
+//   if (proxy) {
+//     HttpsProxyAgent = require('https-proxy-agent');
+//   }
+//   return proxy;
+// }
+// loadProxy();
 
 export class Gaxios {
   private agentCache = new Map<
@@ -127,7 +125,7 @@ export class Gaxios {
 
   private async getResponseData(
     opts: GaxiosOptions,
-    res: Response | NodeFetchResponse
+    res: Response
   ): Promise<any> {
     switch (opts.responseType) {
       case 'stream':
@@ -204,16 +202,6 @@ export class Gaxios {
     }
     opts.method = opts.method || 'GET';
 
-    const proxy = loadProxy();
-    if (proxy) {
-      if (this.agentCache.has(proxy)) {
-        opts.agent = this.agentCache.get(proxy);
-      } else {
-        opts.agent = new HttpsProxyAgent(proxy);
-        this.agentCache.set(proxy, opts.agent!);
-      }
-    }
-
     return opts;
   }
 
@@ -235,7 +223,7 @@ export class Gaxios {
 
   private translateResponse<T>(
     opts: GaxiosOptions,
-    res: Response | NodeFetchResponse,
+    res: Response,
     data?: T
   ): GaxiosResponse<T> {
     // headers need to be converted from a map to an obj

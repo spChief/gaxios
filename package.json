@@ -69,7 +69,6 @@
     "ncp": "^2.0.0",
     "nock": "^12.0.0",
     "null-loader": "^3.0.0",
-    "puppeteer": "^2.0.0",
     "sinon": "^9.0.0",
     "tmp": "0.1.0",
     "ts-loader": "^6.0.0",
@@ -80,8 +79,6 @@
   "dependencies": {
     "abort-controller": "^3.0.0",
     "extend": "^3.0.2",
-    "https-proxy-agent": "^5.0.0",
-    "is-stream": "^2.0.0",
-    "node-fetch": "^2.3.0"
+    "is-stream": "^2.0.0"
   }
 }
